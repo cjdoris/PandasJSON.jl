@@ -10,30 +10,15 @@ This package is not yet registered, but can be installed like so:
 pkg> add https://github.com/cjdoris/PandasIO.jl
 ```
 
-## Example
+## Tutorial
 
-The `examples` directory in this repository contains many example Pandas dataframes.
+In the following example, we:
+- construct a simple dataframe;
+- save it in JSON format with `to_json`;
+- print out the resulting JSON file; and
+- read the file back in as a dataframe with `read_json`.
 
-In the following example, we use `read_json` to read a JSON-formatted dataframe as a table,
-which is then converted to a `DataFrame` for easier processing.
-
-```julia
-julia> using PandasIO, DataFrames
-
-julia> df = DataFrame(PandasIO.read_json("examples/frame-01-table.json"))
-3×4 DataFrame
- Row │ int    num      str     bool
-     │ Int64  Float64  String  Bool
-─────┼───────────────────────────────
-   1 │     1      1.1  foo      true
-   2 │     2      2.2  bar     false
-   3 │     3      3.3  baz      true
 ```
-
-In the following example, we use `to_json` to write a JSON-formatted dataframe to disk,
-and show the resulting JSON. This file can be loaded into Python using `pandas.read_json`.
-
-```julia
 julia> using PandasIO, DataFrames
 
 julia> df = DataFrame(x=[1,2,3], y=[true,false,missing])
@@ -45,8 +30,26 @@ julia> df = DataFrame(x=[1,2,3], y=[true,false,missing])
    2 │     2    false
    3 │     3  missing
 
-julia> PandasIO.to_json("example.json", df)
+julia> PandasIO.to_json("example.json", df, orient=:split)
 
 julia> println(read("example.json", String))
-{"y":{"1":false,"0":true,"2":null},"x":{"1":2,"0":1,"2":3}}
+{"index":["0","1","2"],"columns":["x","y"],"data":[[1,true],[2,false],[3,null]]}
+
+julia> df = PandasIO.read_json("example.json", orient=:split) |> DataFrame
+3×2 DataFrame
+ Row │ x      y
+     │ Int64  Bool?
+─────┼────────────────
+   1 │     1     true
+   2 │     2    false
+   3 │     3  missing
 ```
+
+Notes:
+- We used `DataFrame`s for convenience, but PandasIO works with any Tables.jl-compatible
+  tabular data structure.
+- The `orient=:split` argument is optional. We used `:split` because it preserves the order
+  of rows and columns, whereas the default `orient=:columns` does not.
+- When reading a table, you must ensure the `orient` argument is the same as when it was
+  written. The default used by both Pandas and PandasIO is `orient=:columns`. The function
+  `PandasIO.guess_json_orient` can be used if you're not sure what this should be.
