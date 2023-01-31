@@ -1,0 +1,1 @@
+{"schema":{"fields":[{"name":"index","type":"string"},{"name":"num","type":"number"}],"primaryKey":["index"],"pandas_version":"1.4.0"},"data":[{"index":"a","num":1.1},{"index":"b","num":2.2},{"index":"c","num":3.3}]}
