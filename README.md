@@ -8,19 +8,22 @@ dataframes.
 
 Currently only JSON is supported. Other more standard formats are supported by other
 Julia packages - we recommend using one of these instead if you have the choice:
-- CSV: [CSV.jl](https://csv.juliadata.org/stable/), [DelimitedFiles.jl](https://docs.julialang.org/en/v1/stdlib/DelimitedFiles/)
-- Pickle: ???
-- FWF: [CSV.jl](https://csv.juliadata.org/stable/examples.html#ignorerepeated_example)
-- Excel: [XLSX.jl](https://felipenoris.github.io/XLSX.jl/stable/), [ExcelReaders.jl](https://github.com/queryverse/ExcelReaders.jl)
-- JSON: [**PandasIO.jl**](https://github.com/cjdoris/PandasIO.jl)
-- HTML: [PrettyTables.jl (write)](https://ronisbr.github.io/PrettyTables.jl/stable/man/html_backend/)
-- XML: ???
-- LaTeX: [PrettyTable.jl (write)](https://ronisbr.github.io/PrettyTables.jl/stable/man/latex_backend/)
-- HDF: [HDF5.jl](https://juliaio.github.io/HDF5.jl/stable/)
-- Feather: [Feather.jl](https://feather.juliadata.org/stable/)
-- Parquet: [Parquet.jl](https://github.com/JuliaIO/Parquet.jl), [Parquet2.jl](https://expandingman.gitlab.io/Parquet2.jl/)
-- ORC: ???
-- Stata DTA, SAS, SPSS: [ReadStat.jl](https://github.com/queryverse/ReadStat.jl)
+
+| Format | Packages |
+| ------ | -------- |
+| CSV | [CSV.jl](https://csv.juliadata.org/stable/), [DelimitedFiles.jl](https://docs.julialang.org/en/v1/stdlib/DelimitedFiles/) |
+| Pickle | ??? |
+| FWF | [CSV.jl](https://csv.juliadata.org/stable/examples.html#ignorerepeated_example) |
+| Excel | [XLSX.jl](https://felipenoris.github.io/XLSX.jl/stable/), [ExcelReaders.jl](https://github.com/queryverse/ExcelReaders.jl) |
+| JSON | [**PandasIO.jl**](https://github.com/cjdoris/PandasIO.jl) |
+| HTML | [PrettyTables.jl (write)](https://ronisbr.github.io/PrettyTables.jl/stable/man/html_backend/) |
+| XML | ??? |
+| LaTeX | [PrettyTable.jl (write)](https://ronisbr.github.io/PrettyTables.jl/stable/man/latex_backend/) |
+| HDF | [HDF5.jl](https://juliaio.github.io/HDF5.jl/stable/) |
+| Feather | [Feather.jl](https://feather.juliadata.org/stable/) |
+| Parquet | [Parquet.jl](https://github.com/JuliaIO/Parquet.jl), [Parquet2.jl](https://expandingman.gitlab.io/Parquet2.jl/) |
+| ORC | ??? |
+| Stata DTA, SAS, SPSS | [ReadStat.jl](https://github.com/queryverse/ReadStat.jl) |
 
 ## Install
 
