@@ -83,15 +83,18 @@ function _read_json_values!(io, data, index)
 end
 
 """
-    read_json_orient(filename_or_io)
+    guess_json_orient(filename_or_io)
 
-The `orient` of a Pandas dataframe in JSON format from the given file or IO stream.
+Guess possible values for the `orient` parameter used when the given file was created.
 
-!!! warning
-    The `index` and `columns` orients are indistinguishable, so this function will always
-    return `columns` even if the file was saved with `index`.
+A list of symbols is returned, the values being one of `:columns`, `:index`, `:records`,
+`:split`, `:table` or `:values`.
+
+Normally one possibility is returned. Since `:columns` and `:index` are similar formats,
+these two cases cannot be distinguished and are always returned together - in which case
+`:columns` is the likely format since this is the default in Pandas.
 """
-function read_json_orient(io::IO)
+function guess_json_orient(io::IO)
     # read a character (skip space)
     function readc(io)
         while true
@@ -122,60 +125,50 @@ function read_json_orient(io::IO)
             # TODO: make a special dict type which only stores the keys
             seek(io, pos)
             o = JSON3.read(io, Dict{Symbol,Any})
-            if keys(o) == Set([:index, :columns, :data]) && o[:data] isa AbstractVector
-                return :split
-            elseif keys(o) == Set([:schema, :data]) && o[:data] isa AbstractVector
-                return :table
+            if issubset([:columns, :data], keys(o)) && o[:data] isa AbstractVector
+                return [:split]
+            elseif issubset([:schema, :data], keys(o)) && o[:data] isa AbstractVector
+                return [:table]
             else
-                return :columns
+                return [:columns, :index]
             end
         else
-            return :columns
+            return [:columns, :index]
         end
     elseif c == '['
         c = readc(io)
         if c == '{' || c == ']'
-            return :records
+            return [:records]
         elseif c == '['
-            return :values
+            return [:values]
         end
     end
-    error("cannot infer orient")
+    return Symbol[]
 end
 
-read_json_orient(filename::AbstractString) = open(read_json_orient, filename)
+guess_json_orient(filename::AbstractString) = open(guess_json_orient, filename)
 
 """
-    read_json(filename_or_io; orient=:auto, index=false)
+    read_json(filename_or_io; orient=:columns, index=false)
 
 Read a Pandas dataframe in JSON format from the given file or IO stream.
 
-- `orient` specifies the format of the data in the JSON file, and must match the same
-  argument given when `to_json` was called. It is one of `:columns`, `:index`, `:records`,
-  `:split`, `:table` or `:values`.
+## Keyword Args
 
-  The special value `:auto` infers the orient using [`read_json_orient`](@ref).
+- `orient`: the format of the data in the JSON file, one of `:columns`, `:index`,
+  `:records`, `:split`, `:table` or `:values`. The default `:columns` matches the default
+  used by Pandas. See [`guess_json_orient`](@ref) if you are not sure.
 
-- `index` specifies whether or not to include the index as extra columns of the returned
-  table. The column name is `:index`, but can be specified by setting `index` to the column
-  name.
+- `index`: if true, include the index as extra column(s) of the table. By default the column
+  name is `index` but can be specified by setting `index` to a `Symbol`.
 """
-function read_json(io::IO; orient::Symbol=:auto, index::Union{Nothing,Symbol,Bool}=nothing)
+function read_json(io::IO; orient::Symbol=:columns, index::Union{Nothing,Symbol,Bool}=nothing)
     # boolean index is interpreted as :index or nothing
     if index isa Bool
         index = index ? :index : nothing
     end
     # parse into columnname => columndata pairs
     data = Vector{Pair{Symbol,Vector}}()
-    if orient === :auto
-        pos = position(io)
-        try
-            orient = read_json_orient(io::IO)
-        finally
-            seek(io, pos)
-        end
-        @debug "auto orient" orient
-    end
     if orient === :columns
         _read_json_columns!(io, data, index)
     elseif orient === :index

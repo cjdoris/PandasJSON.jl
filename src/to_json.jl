@@ -2,6 +2,12 @@
     to_json(filename_or_io, table; orient=:columns)
 
 Write the given table to the given file in JSON format.
+
+## Keyword Args
+
+- `orient`: the format of the data in the JSON file, one of `:columns`, `:index`,
+  `:records`, `:split`, `:table` or `:values`. The default `:columns` matches the default
+  used by Pandas.
 """
 function to_json(io::IO, table; orient::Symbol=:columns)
     if orient === :columns
