@@ -124,5 +124,6 @@ parsing to get to/from a tabular data structure:
 | Format | Packages |
 | ------ | -------- |
 | JSON | [JSON](https://github.com/JuliaIO/JSON.jl), [JSON3](https://quinnj.github.io/JSON3.jl/stable/) |
+| HTML | [Gumbo](https://github.com/JuliaWeb/Gumbo.jl), [EzXML](https://juliaio.github.io/EzXML.jl/stable/) |
 | XML | [EzXML](https://juliaio.github.io/EzXML.jl/stable/), [LightXML](https://github.com/JuliaIO/LightXML.jl), [XML](https://github.com/JuliaComputing/XML.jl) |
 | HDF | [HDF5](https://juliaio.github.io/HDF5.jl/stable/) |
