@@ -1,6 +1,10 @@
 # PandasIO.jl
 
-A Julia package for reading and writing Pandas dataframes.
+A
+[Julia](https://julialang.org/)
+package for reading and writing
+[Pandas](https://pandas.pydata.org/)
+dataframes.
 
 ## Install
 
@@ -12,8 +16,11 @@ pkg> add https://github.com/cjdoris/PandasIO.jl
 
 ## Tutorial
 
-First we load relevant packages. In this tutorial we use DataFrames for our tabular data,
-but any Tables.jl-compatible data structure will do.
+First we load relevant packages. In this tutorial we use
+[DataFrames](https://dataframes.juliadata.org/stable/)
+for our tabular data, but any
+[Tables.jl](https://tables.juliadata.org/stable/)-compatible
+data structure will do.
 
 ```julia
 julia> using PandasIO, DataFrames
