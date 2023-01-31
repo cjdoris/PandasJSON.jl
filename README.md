@@ -4,6 +4,8 @@ A Julia package for reading and writing Pandas dataframes.
 
 ## Install
 
+This package is not yet registered, but can be installed like so:
+
 ```
 pkg> add https://github.com/cjdoris/PandasIO.jl
 ```
@@ -18,7 +20,7 @@ which is then converted to a `DataFrame` for easier processing.
 ```julia
 julia> using PandasIO, DataFrames
 
-julia> df = DataFrame(PandasIO.read_json("examples\\frame-01-table.json"))
+julia> df = DataFrame(PandasIO.read_json("examples/frame-01-table.json"))
 3×4 DataFrame
  Row │ int    num      str     bool
      │ Int64  Float64  String  Bool
