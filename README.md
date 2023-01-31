@@ -11,19 +11,19 @@ Julia packages - we recommend using one of these instead if you have the choice:
 
 | Format | Packages |
 | ------ | -------- |
-| CSV | [CSV.jl](https://csv.juliadata.org/stable/), [DelimitedFiles.jl](https://docs.julialang.org/en/v1/stdlib/DelimitedFiles/) |
+| CSV | [CSV](https://csv.juliadata.org/stable/), [DelimitedFiles](https://docs.julialang.org/en/v1/stdlib/DelimitedFiles/) |
 | Pickle | ??? |
-| FWF | [CSV.jl](https://csv.juliadata.org/stable/examples.html#ignorerepeated_example) |
-| Excel | [XLSX.jl](https://felipenoris.github.io/XLSX.jl/stable/), [ExcelReaders.jl](https://github.com/queryverse/ExcelReaders.jl) |
-| JSON | [**PandasIO.jl**](https://github.com/cjdoris/PandasIO.jl) |
-| HTML | [PrettyTables.jl (write)](https://ronisbr.github.io/PrettyTables.jl/stable/man/html_backend/) |
+| FWF | [CSV](https://csv.juliadata.org/stable/examples.html#ignorerepeated_example) |
+| Excel | [XLSX](https://felipenoris.github.io/XLSX.jl/stable/), [ExcelReaders](https://github.com/queryverse/ExcelReaders.jl) |
+| JSON | [**PandasIO**](https://github.com/cjdoris/PandasIO.jl) |
+| HTML | [PrettyTables](https://ronisbr.github.io/PrettyTables.jl/stable/man/html_backend/) (write-only) |
 | XML | ??? |
-| LaTeX | [PrettyTable.jl (write)](https://ronisbr.github.io/PrettyTables.jl/stable/man/latex_backend/) |
-| HDF | [HDF5.jl](https://juliaio.github.io/HDF5.jl/stable/) |
-| Feather | [Feather.jl](https://feather.juliadata.org/stable/) |
-| Parquet | [Parquet.jl](https://github.com/JuliaIO/Parquet.jl), [Parquet2.jl](https://expandingman.gitlab.io/Parquet2.jl/) |
+| LaTeX | [PrettyTables](https://ronisbr.github.io/PrettyTables.jl/stable/man/latex_backend/) (write-only) |
+| HDF | [HDF5](https://juliaio.github.io/HDF5.jl/stable/) |
+| Feather | [Feather](https://feather.juliadata.org/stable/) |
+| Parquet | [Parquet](https://github.com/JuliaIO/Parquet.jl), [Parquet2](https://expandingman.gitlab.io/Parquet2.jl/) |
 | ORC | ??? |
-| Stata DTA, SAS, SPSS | [ReadStat.jl](https://github.com/queryverse/ReadStat.jl) |
+| Stata DTA, SAS, SPSS | [ReadStat](https://github.com/queryverse/ReadStat.jl) |
 
 ## Install
 
