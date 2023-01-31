@@ -78,3 +78,10 @@ julia> df = PandasIO.read_json("example.json", orient=:split) |> DataFrame
 Note that it is important the the same `orient` parameter is used when reading a table as
 when writing it. The default used by both Pandas and PandasIO is `orient=:columns`. If you
 are not sure, you can use `PandasIO.guess_json_orient`.
+
+## API
+
+Read the docstrings for more details and keyword arguments.
+- `read_json(file)`: Read a JSON file as a table.
+- `to_json(file, table)`: Write a table to the file in JSON format.
+- `guess_json_orient(file)`: Guess the `orient` parameter used to write the given file.
