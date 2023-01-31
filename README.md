@@ -6,37 +6,7 @@ package for reading and writing
 [Pandas](https://pandas.pydata.org/)
 dataframes.
 
-## Supported formats
-
-Currently only JSON is supported.
-
-Other more standard tabular formats are supported by other Julia packages - we recommend
-using one of these instead if you have the choice:
-
-| Format | Packages |
-| ------ | -------- |
-| Feather | [Feather](https://feather.juliadata.org/stable/) |
-| Parquet | [Parquet](https://github.com/JuliaIO/Parquet.jl), [Parquet2](https://expandingman.gitlab.io/Parquet2.jl/) |
-| ORC | ??? |
-| Stata DTA, SAS, SPSS | [ReadStat](https://github.com/queryverse/ReadStat.jl) |
-| Excel | [XLSX](https://felipenoris.github.io/XLSX.jl/stable/), [ExcelReaders](https://github.com/queryverse/ExcelReaders.jl) |
-| HDF | ??? |
-| CSV | [CSV](https://csv.juliadata.org/stable/), [DelimitedFiles](https://docs.julialang.org/en/v1/stdlib/DelimitedFiles/) |
-| FWF | [CSV](https://csv.juliadata.org/stable/examples.html#ignorerepeated_example) |
-| JSON | [**PandasIO**](https://github.com/cjdoris/PandasIO.jl) |
-| Pickle | ??? |
-| HTML | [PrettyTables](https://ronisbr.github.io/PrettyTables.jl/stable/man/html_backend/) (write only) |
-| XML | ??? |
-| LaTeX | [PrettyTables](https://ronisbr.github.io/PrettyTables.jl/stable/man/latex_backend/) (write only) |
-
-The following packages can read/write the given formats, but require some extra manual
-parsing to get to/from a tabular data structure:
-
-| Format | Packages |
-| ------ | -------- |
-| JSON | [JSON](https://github.com/JuliaIO/JSON.jl), [JSON3](https://quinnj.github.io/JSON3.jl/stable/) |
-| XML | [EzXML](https://juliaio.github.io/EzXML.jl/stable/), [LightXML](https://github.com/JuliaIO/LightXML.jl), [XML](https://github.com/JuliaComputing/XML.jl) |
-| HDF | [HDF5](https://juliaio.github.io/HDF5.jl/stable/) |
+Currently supports JSON.
 
 ## Install
 
@@ -124,3 +94,35 @@ Read the docstrings for more details and keyword arguments.
 - `read_json(file)`: Read a JSON file as a table.
 - `to_json(file, table)`: Write a table to the file in JSON format.
 - `guess_json_orient(file)`: Guess the `orient` parameter used to write the given file.
+
+## Supported formats
+
+Currently only JSON is supported.
+
+Other more standard tabular formats are supported by other Julia packages - we recommend
+using one of these instead if you have the choice:
+
+| Format | Packages |
+| ------ | -------- |
+| Feather | [Feather](https://feather.juliadata.org/stable/) |
+| Parquet | [Parquet](https://github.com/JuliaIO/Parquet.jl), [Parquet2](https://expandingman.gitlab.io/Parquet2.jl/) |
+| ORC | ??? |
+| Stata DTA, SAS, SPSS | [ReadStat](https://github.com/queryverse/ReadStat.jl) |
+| Excel | [XLSX](https://felipenoris.github.io/XLSX.jl/stable/), [ExcelReaders](https://github.com/queryverse/ExcelReaders.jl) |
+| HDF | ??? |
+| CSV | [CSV](https://csv.juliadata.org/stable/), [DelimitedFiles](https://docs.julialang.org/en/v1/stdlib/DelimitedFiles/) |
+| FWF | [CSV](https://csv.juliadata.org/stable/examples.html#ignorerepeated_example) |
+| JSON | [**PandasIO**](https://github.com/cjdoris/PandasIO.jl) |
+| Pickle | ??? |
+| HTML | [PrettyTables](https://ronisbr.github.io/PrettyTables.jl/stable/man/html_backend/) (write only) |
+| XML | ??? |
+| LaTeX | [PrettyTables](https://ronisbr.github.io/PrettyTables.jl/stable/man/latex_backend/) (write only) |
+
+The following packages can read/write the given formats, but require some extra manual
+parsing to get to/from a tabular data structure:
+
+| Format | Packages |
+| ------ | -------- |
+| JSON | [JSON](https://github.com/JuliaIO/JSON.jl), [JSON3](https://quinnj.github.io/JSON3.jl/stable/) |
+| XML | [EzXML](https://juliaio.github.io/EzXML.jl/stable/), [LightXML](https://github.com/JuliaIO/LightXML.jl), [XML](https://github.com/JuliaComputing/XML.jl) |
+| HDF | [HDF5](https://juliaio.github.io/HDF5.jl/stable/) |
