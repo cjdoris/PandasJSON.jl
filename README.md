@@ -64,7 +64,7 @@ julia> df = PandasIO.read_json("example.json", DataFrame)
    3 │     3  missing
 ```
 
-Important note: These functions have an optional `orient` keyword argument, which controls
+**Note:** These functions have an optional `orient` keyword argument, which controls
 how the tabular data is represented as a JSON structure. The default in both Pandas and
 PandasIO is `orient=:split`, so with default parameters everything should be compatible.
 
@@ -75,7 +75,6 @@ You should use this argument if either:
 
 If you are not sure, you can use `guess_json_orient`:
 
-Here is an example:
 ```julia
 julia> PandasIO.to_json("example.json", df, orient=:table)
 
