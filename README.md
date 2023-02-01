@@ -47,14 +47,14 @@ Now let's save this to disk in JSON format and take a look at the resulting file
 julia> PandasIO.to_json("example.json", df)
 
 julia> println(read("example.json", String))
-{"index":["0","1","2"],"columns":["x","y"],"data":[[1,true],[2,false],[3,null]]}
+{"y":{"1":false,"0":true,"2":null},"x":{"1":2,"0":1,"2":3}}
 ```
 
 Finally we read the JSON file back as a table and convert it to a DataFrame. We could do the
 same thing with a JSON file written in Python by Pandas.
 
 ```julia
-julia> df = PandasIO.read_json("example.json") |> DataFrame
+julia> df = PandasIO.read_json("example.json", DataFrame)
 3×2 DataFrame
  Row │ y        x
      │ Bool?    Int64
@@ -74,7 +74,7 @@ Here, we use `orient=:split` which preserves the order of rows and columns.
 ```julia
 julia> PandasIO.to_json("example.json", df, orient=:split)
 
-julia> df = PandasIO.read_json("example.json", orient=:split) |> DataFrame
+julia> df = PandasIO.read_json("example.json", DataFrame, orient=:split)
 3×2 DataFrame
  Row │ x      y
      │ Int64  Bool?
@@ -91,7 +91,7 @@ are not sure, you can use `PandasIO.guess_json_orient`.
 ## API
 
 Read the docstrings for more details and keyword arguments.
-- `read_json(file)`: Read a JSON file as a table.
+- `read_json(file, [type])`: Read a JSON file as a table.
 - `to_json(file, table)`: Write a table to the file in JSON format.
 - `guess_json_orient(file)`: Guess the `orient` parameter used to write the given file.
 

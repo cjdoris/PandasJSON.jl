@@ -149,9 +149,13 @@ end
 guess_json_orient(filename::AbstractString) = open(guess_json_orient, filename)
 
 """
-    read_json(filename_or_io; orient=:columns, index=false)
+    read_json(file, [type]; orient=:columns, index=false)
 
 Read a Pandas dataframe in JSON format from the given file or IO stream.
+
+## Args
+- `file`: Either a file name or an open IO stream.
+- `type`: The type of the returned table.
 
 ## Keyword Args
 
@@ -162,7 +166,7 @@ Read a Pandas dataframe in JSON format from the given file or IO stream.
 - `index`: if true, include the index as extra column(s) of the table. By default the column
   name is `index` but can be specified by setting `index` to a `Symbol`.
 """
-function read_json(io::IO; orient::Symbol=:columns, index::Union{Nothing,Symbol,Bool}=nothing)
+function read_json(io::IO, sink=identity; orient::Symbol=:columns, index::Union{Nothing,Symbol,Bool}=nothing)
     # boolean index is interpreted as :index or nothing
     if index isa Bool
         index = index ? :index : nothing
@@ -187,7 +191,7 @@ function read_json(io::IO; orient::Symbol=:columns, index::Union{Nothing,Symbol,
     # construct the returned table
     schema = Tables.Schema([k for (k, _) in data], [eltype(c) for (_, c) in data])
     dict = Tables.OrderedDict(data)
-    return Tables.DictColumnTable(schema, dict)
+    return sink(Tables.DictColumnTable(schema, dict))
 end
 
-read_json(fn::AbstractString; kw...) = open(io -> read_json(io; kw...), fn)
+read_json(fn::AbstractString, sink=identity; kw...) = open(io -> read_json(io, sink; kw...), fn)

@@ -1,24 +1,28 @@
 """
-    read_html(filename_or_io; match=r".+", skiprows=0, header=1)
+    read_html(file, [type]; match=r".+", skiprows=0, header=1)
 
 Read tables from an HTML file.
+
+## Args
+- `file`: Either a file name or an open IO stream.
+- `type`: The type of the returned tables.
 
 ## Keyword Args
 - `match`: Only tables matching this regular expression are returned.
 - `skiprows`: The number of rows to skip from the top of each table.
 - `header`: Which row contains the header. Subsequent rows are the data.
 """
-function read_html(io::IO; match::Regex=r".+", kw...)
+function read_html(io::IO, sink=identity; match::Regex=r".+", kw...)
     return [
-        _parse_html_table(elem; kw...)
+        sink(_parse_html_table(elem; kw...))
         for elem in AbstractTrees.StatelessBFS(Gumbo.parsehtml(read(io, String)).root)
         if elem isa Gumbo.HTMLElement{:table} && occursin(match, string(elem))
     ]
 end
 
-function read_html(filename::AbstractString; kw...)
+function read_html(filename::AbstractString, sink=identity; kw...)
     return open(filename) do io
-        read_html(io; kw...)
+        read_html(io, sink; kw...)
     end
 end
 
