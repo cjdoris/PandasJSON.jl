@@ -12,19 +12,16 @@ Read tables from an HTML file.
 - `skiprows`: The number of rows to skip from the top of each table.
 - `header`: Which row contains the header. Subsequent rows are the data.
 """
-function read_html(io::IO, sink=identity; match::Regex=r".+", kw...)
+function read_html(io::IO; match::Regex=r".+", kw...)
     return [
-        sink(_parse_html_table(elem; kw...))
+        _parse_html_table(elem; kw...)
         for elem in AbstractTrees.StatelessBFS(Gumbo.parsehtml(read(io, String)).root)
         if elem isa Gumbo.HTMLElement{:table} && occursin(match, string(elem))
     ]
 end
 
-function read_html(filename::AbstractString, sink=identity; kw...)
-    return open(filename) do io
-        read_html(io, sink; kw...)
-    end
-end
+read_html(fn::AbstractString; kw...) = open(io -> read_html(io; kw...), fn)
+read_html(file, sink; kw...) = map(sink, read_html(file; kw...))
 
 function _parse_html_table(elem; header::Union{Integer,Nothing}=1, skiprows::Integer=0)
     # parse out text from the table

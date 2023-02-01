@@ -166,7 +166,7 @@ Read a Pandas dataframe in JSON format from the given file or IO stream.
 - `index`: if true, include the index as extra column(s) of the table. By default the column
   name is `index` but can be specified by setting `index` to a `Symbol`.
 """
-function read_json(io::IO, sink=identity; orient::Symbol=:columns, index::Union{Nothing,Symbol,Bool}=nothing)
+function read_json(io::IO; orient::Symbol=:columns, index::Union{Nothing,Symbol,Bool}=nothing)
     # boolean index is interpreted as :index or nothing
     if index isa Bool
         index = index ? :index : nothing
@@ -191,7 +191,8 @@ function read_json(io::IO, sink=identity; orient::Symbol=:columns, index::Union{
     # construct the returned table
     schema = Tables.Schema([k for (k, _) in data], [eltype(c) for (_, c) in data])
     dict = Tables.OrderedDict(data)
-    return sink(Tables.DictColumnTable(schema, dict))
+    return Tables.DictColumnTable(schema, dict)
 end
 
-read_json(fn::AbstractString, sink=identity; kw...) = open(io -> read_json(io, sink; kw...), fn)
+read_json(fn::AbstractString; kw...) = open(io -> read_json(io; kw...), fn)
+read_json(file, sink; kw...) = sink(read_json(file; kw...))
