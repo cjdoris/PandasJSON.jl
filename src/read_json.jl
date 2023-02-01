@@ -12,28 +12,45 @@ function _read_json_table_column(::Type{T}, k, rows) where {T}
     return [_read_json_item(T, get(row, k, nothing)) for row in rows]
 end
 
+function _sort_index!(idx)
+    # int sort
+    intidx = Union{Int,Nothing}[tryparse(Int, x) for x in idx]
+    if !any(isnothing, intidx)
+        return permute!(idx, sortperm(intidx))
+    end
+    # string sort
+    return sort!(idx)
+end
+
+function _sort_columns!(cols)
+    return sort!(cols)
+end
+
 function _read_json_columns!(io, data, index)
     o = JSON3.read(io, Dict{Symbol, Dict{String,Any}})
-    idx = unique!([k for col in values(o) for k in keys(col)])
+    idx = _sort_index!(unique!([k for col in values(o) for k in keys(col)]))
     index !== nothing && push!(data, index => idx)
-    for (k, col) in o
+    cols = _sort_columns!(collect(keys(o)))
+    for k in cols
+        col = o[k]
         push!(data, k => [_read_json_item(get(col, i, nothing)) for i in idx])
     end
 end
 
 function _read_json_index!(io, data, index)
     o = JSON3.read(io, Dict{String,Dict{Symbol,Any}})
-    index !== nothing && push!(data, index => collect(keys(o)))
-    cols = unique!([k for row in values(o) for k in keys(row)])
+    idx = _sort_index!(collect(keys(o)))
+    index !== nothing && push!(data, idx)
+    cols = _sort_columns!(unique!([k for row in values(o) for k in keys(row)]))
     for k in cols
-        push!(data, k => [_read_json_item(get(row, k, nothing)) for row in values(o)])
+        push!(data, k => [_read_json_item(get(o[i], k, nothing)) for i in idx])
     end
 end
 
 function _read_json_records!(io, data, index)
     o = JSON3.read(io, Vector{Dict{Symbol,Any}})
     index !== nothing && push!(data, index => 1:length(o))
-    cols = unique!([k for row in o for k in keys(row)])
+    cols = _sort_cols!(unique!([k for row in o for k in keys(row)]))
     for k in cols
         push!(data, k => [_read_json_item(get(row, k, nothing)) for row in o])
     end
