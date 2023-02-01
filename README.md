@@ -56,26 +56,6 @@ same thing with a JSON file written in Python by Pandas.
 ```julia
 julia> df = PandasIO.read_json("example.json", DataFrame)
 3×2 DataFrame
- Row │ y        x
-     │ Bool?    Int64
-─────┼────────────────
-   1 │   false      2
-   2 │    true      1
-   3 │ missing      3
-```
-
-Observe that the resulting table has all the same information, but the rows and columns are
-not in the same order. This is a limitation of the default JSON format used by Pandas and
-PandasIO.
-
-If this is problematic, you can specify the `orient` parameter when writing and reading.
-Here, we use `orient=:split` which preserves the order of rows and columns.
-
-```julia
-julia> PandasIO.to_json("example.json", df, orient=:split)
-
-julia> df = PandasIO.read_json("example.json", DataFrame, orient=:split)
-3×2 DataFrame
  Row │ x      y
      │ Int64  Bool?
 ─────┼────────────────
@@ -84,9 +64,34 @@ julia> df = PandasIO.read_json("example.json", DataFrame, orient=:split)
    3 │     3  missing
 ```
 
-Note that it is important the the same `orient` parameter is used when reading a table as
-when writing it. The default used by both Pandas and PandasIO is `orient=:columns`. If you
-are not sure, you can use `PandasIO.guess_json_orient`.
+Important note: These functions have an optional `orient` keyword argument, which controls
+how the tabular data is represented as a JSON structure. The default in both Pandas and
+PandasIO is `orient=:split`, so with default parameters everything should be compatible.
+
+You should use this argument if either:
+- You are reading data which set the `orient` to something non-default.
+- You would like to guarantee row and column ordering is correct (`split`, `table` or
+  `values`) or require more column type information to be stored (`table`).
+
+If you are not sure, you can use `guess_json_orient`:
+
+Here is an example:
+```julia
+julia> PandasIO.to_json("example.json", df, orient=:table)
+
+julia> PandasIO.guess_json_orient("example.json")
+1-element Vector{Symbol}:
+ :table
+
+julia> df = PandasIO.read_json("example.json", DataFrame, orient=:table)
+3×2 DataFrame
+ Row │ x      y
+     │ Int64  Bool?
+─────┼────────────────
+   1 │     1     true
+   2 │     2    false
+   3 │     3  missing
+```
 
 ## API
 
