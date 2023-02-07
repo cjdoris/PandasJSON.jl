@@ -110,11 +110,11 @@ Read a Pandas dataframe in JSON format from the given file or IO stream.
 
 ## Keyword Args
 
-- `orient`: the format of the data in the JSON file, one of `"columns"`, `"index"`,
+- `orient`: The format of the data in the JSON file, one of `"columns"`, `"index"`,
   `"records"`, `"split"`, `"table"` or `"values"`. The default `"columns"` matches the
   default used by Pandas. See [`guess_orient`](@ref) if you are not sure.
 
-- `index`: if true, include the index as extra column(s) of the table. By default the column
+- `index`: If true, include the index as extra column(s) of the table. By default the column
   name is `index` but can be specified by setting `index` to a `Symbol`.
 """
 function read(io::IO; orient::AbstractString="columns", index::Union{Nothing,Symbol,Bool}=nothing)
