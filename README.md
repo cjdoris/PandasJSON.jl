@@ -1,4 +1,4 @@
-# PandasIO.jl
+# PandasJSON.jl
 
 A
 [Julia](https://julialang.org/)
@@ -13,7 +13,7 @@ Currently supports JSON.
 This package is not yet registered, but can be installed like so:
 
 ```
-pkg> add https://github.com/cjdoris/PandasIO.jl
+pkg> add https://github.com/cjdoris/PandasJSON.jl
 ```
 
 ## Tutorial
@@ -25,7 +25,7 @@ for our tabular data, but any
 data structure will do.
 
 ```julia
-julia> using PandasIO, DataFrames
+julia> using PandasJSON, DataFrames
 ```
 
 Now we create a table with two columns and some missing data.
@@ -44,7 +44,7 @@ julia> df = DataFrame(x=[1,2,3], y=[true,false,missing])
 Now let's save this to disk in JSON format and take a look at the resulting file.
 
 ```julia
-julia> PandasIO.to_json("example.json", df)
+julia> PandasJSON.to_json("example.json", df)
 
 julia> println(read("example.json", String))
 {"y":{"1":false,"0":true,"2":null},"x":{"1":2,"0":1,"2":3}}
@@ -54,7 +54,7 @@ Finally we read the JSON file back as a table and convert it to a DataFrame. We 
 same thing with a JSON file written in Python by Pandas.
 
 ```julia
-julia> df = PandasIO.read_json("example.json", DataFrame)
+julia> df = PandasJSON.read_json("example.json", DataFrame)
 3×2 DataFrame
  Row │ x      y
      │ Int64  Bool?
@@ -66,7 +66,7 @@ julia> df = PandasIO.read_json("example.json", DataFrame)
 
 **Note:** These functions have an optional `orient` keyword argument, which controls
 how the tabular data is represented as a JSON structure. The default in both Pandas and
-PandasIO is `orient=:split`, so with default parameters everything should be compatible.
+PandasJSON is `orient=:split`, so with default parameters everything should be compatible.
 
 You should use this argument if either:
 - You are reading data which set the `orient` to something non-default.
@@ -76,13 +76,13 @@ You should use this argument if either:
 If you are not sure, you can use `guess_json_orient`:
 
 ```julia
-julia> PandasIO.to_json("example.json", df, orient=:table)
+julia> PandasJSON.to_json("example.json", df, orient=:table)
 
-julia> PandasIO.guess_json_orient("example.json")
+julia> PandasJSON.guess_json_orient("example.json")
 1-element Vector{Symbol}:
  :table
 
-julia> df = PandasIO.read_json("example.json", DataFrame, orient=:table)
+julia> df = PandasJSON.read_json("example.json", DataFrame, orient=:table)
 3×2 DataFrame
  Row │ x      y
      │ Int64  Bool?
@@ -116,7 +116,7 @@ using one of these instead if you have the choice:
 | HDF | ??? |
 | CSV | [CSV](https://csv.juliadata.org/stable/), [DelimitedFiles](https://docs.julialang.org/en/v1/stdlib/DelimitedFiles/) |
 | FWF | [CSV](https://csv.juliadata.org/stable/examples.html#ignorerepeated_example) |
-| JSON | [**PandasIO**](https://github.com/cjdoris/PandasIO.jl) |
+| JSON | [**PandasJSON**](https://github.com/cjdoris/PandasJSON.jl) |
 | Pickle | ??? |
 | HTML | [PrettyTables](https://ronisbr.github.io/PrettyTables.jl/stable/man/html_backend/) (write only) |
 | XML | ??? |

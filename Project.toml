@@ -1,4 +1,4 @@
-name = "PandasIO"
+name = "PandasJSON"
 uuid = "7e6bc812-129d-48ed-802a-d741917feb1c"
 authors = ["Christopher Doris <github.com/cjdoris>"]
 version = "0.1.0"

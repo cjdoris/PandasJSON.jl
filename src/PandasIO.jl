@@ -1,4 +1,4 @@
-module PandasIO
+module PandasJSON
 
 import AbstractTrees
 import Gumbo
@@ -22,4 +22,4 @@ const _json_examples = [
     end
 end
 
-end # module PandasIO
+end # module PandasJSON
