@@ -1,5 +1,5 @@
 """
-    to_json(filename_or_io, table; orient=:columns)
+    write(filename_or_io, table; orient=:columns)
 
 Write the given table to the given file in JSON format.
 
@@ -9,7 +9,7 @@ Write the given table to the given file in JSON format.
   `:records`, `:split`, `:table` or `:values`. The default `:columns` matches the default
   used by Pandas.
 """
-function to_json(io::IO, table; orient::Symbol=:columns)
+function write(io::IO, table; orient::Symbol=:columns)
     if orient === :columns
         _to_json_columns(io, table)
     elseif orient === :index
@@ -28,11 +28,7 @@ function to_json(io::IO, table; orient::Symbol=:columns)
     return
 end
 
-function to_json(filename::AbstractString, table; kw...)
-    return open(filename, "w") do io
-        to_json(io, table; kw...)
-    end
-end
+write(filename::AbstractString, table; kw...) = open(io->write(io, table; kw...), filename, "w")
 
 _to_json_item(x::Union{Nothing,Bool,Real}) = x
 _to_json_item(x::Missing) = nothing

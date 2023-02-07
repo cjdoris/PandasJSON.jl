@@ -100,7 +100,7 @@ function _read_json_values!(io, data, index)
 end
 
 """
-    guess_json_orient(filename_or_io)
+    guess_orient(filename_or_io)
 
 Guess possible values for the `orient` parameter used when the given file was created.
 
@@ -111,11 +111,11 @@ Normally one possibility is returned. Since `:columns` and `:index` are similar 
 these two cases cannot be distinguished and are always returned together - in which case
 `:columns` is the likely format since this is the default in Pandas.
 """
-function guess_json_orient(io::IO)
+function guess_orient(io::IO)
     # read a character (skip space)
     function readc(io)
         while true
-            c = read(io, Char)
+            c = Base.read(io, Char)
             isspace(c) || return c
         end
     end
@@ -125,7 +125,7 @@ function guess_json_orient(io::IO)
         c == '"' || error("invalid JSON")
         cs = Char[]
         while true
-            c = read(io, Char)
+            c = Base.read(io, Char)
             if c == '"'
                 return String(cs)
             else
@@ -163,10 +163,10 @@ function guess_json_orient(io::IO)
     return Symbol[]
 end
 
-guess_json_orient(filename::AbstractString) = open(guess_json_orient, filename)
+guess_orient(filename::AbstractString) = open(guess_orient, filename)
 
 """
-    read_json(file, [type]; orient=:columns, index=false)
+    read(file, [type]; orient=:columns, index=false)
 
 Read a Pandas dataframe in JSON format from the given file or IO stream.
 
@@ -178,12 +178,12 @@ Read a Pandas dataframe in JSON format from the given file or IO stream.
 
 - `orient`: the format of the data in the JSON file, one of `:columns`, `:index`,
   `:records`, `:split`, `:table` or `:values`. The default `:columns` matches the default
-  used by Pandas. See [`guess_json_orient`](@ref) if you are not sure.
+  used by Pandas. See [`guess_orient`](@ref) if you are not sure.
 
 - `index`: if true, include the index as extra column(s) of the table. By default the column
   name is `index` but can be specified by setting `index` to a `Symbol`.
 """
-function read_json(io::IO; orient::Symbol=:columns, index::Union{Nothing,Symbol,Bool}=nothing)
+function read(io::IO; orient::Symbol=:columns, index::Union{Nothing,Symbol,Bool}=nothing)
     # boolean index is interpreted as :index or nothing
     if index isa Bool
         index = index ? :index : nothing
@@ -211,5 +211,5 @@ function read_json(io::IO; orient::Symbol=:columns, index::Union{Nothing,Symbol,
     return Tables.DictColumnTable(schema, dict)
 end
 
-read_json(fn::AbstractString; kw...) = open(io -> read_json(io; kw...), fn)
-read_json(file, sink; kw...) = sink(read_json(file; kw...))
+read(fn::AbstractString; kw...) = open(io -> read(io; kw...), fn)
+read(file, sink; kw...) = sink(read(file; kw...))

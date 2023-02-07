@@ -44,7 +44,7 @@ julia> df = DataFrame(x=[1,2,3], y=[true,false,missing])
 Now let's save this to disk in JSON format and take a look at the resulting file.
 
 ```julia
-julia> PandasJSON.to_json("example.json", df)
+julia> PandasJSON.write("example.json", df)
 
 julia> println(read("example.json", String))
 {"y":{"1":false,"0":true,"2":null},"x":{"1":2,"0":1,"2":3}}
@@ -54,7 +54,7 @@ Finally we read the JSON file back as a table and convert it to a DataFrame. We 
 same thing with a JSON file written in Python by Pandas.
 
 ```julia
-julia> df = PandasJSON.read_json("example.json", DataFrame)
+julia> df = PandasJSON.read("example.json", DataFrame)
 3×2 DataFrame
  Row │ x      y
      │ Int64  Bool?
@@ -73,16 +73,16 @@ You should use this argument if either:
 - You would like to guarantee row and column ordering is correct (`split`, `table` or
   `values`) or require more column type information to be stored (`table`).
 
-If you are not sure, you can use `guess_json_orient`:
+If you are not sure, you can use `guess_orient`:
 
 ```julia
-julia> PandasJSON.to_json("example.json", df, orient=:table)
+julia> PandasJSON.write("example.json", df, orient=:table)
 
-julia> PandasJSON.guess_json_orient("example.json")
+julia> PandasJSON.guess_orient("example.json")
 1-element Vector{Symbol}:
  :table
 
-julia> df = PandasJSON.read_json("example.json", DataFrame, orient=:table)
+julia> df = PandasJSON.read("example.json", DataFrame, orient=:table)
 3×2 DataFrame
  Row │ x      y
      │ Int64  Bool?
@@ -95,9 +95,9 @@ julia> df = PandasJSON.read_json("example.json", DataFrame, orient=:table)
 ## API
 
 Read the docstrings for more details and keyword arguments.
-- `read_json(file, [type])`: Read a JSON file as a table.
-- `to_json(file, table)`: Write a table to the file in JSON format.
-- `guess_json_orient(file)`: Guess the `orient` parameter used to write the given file.
+- `PandasJSON.read(file, [type])`: Read a JSON file as a table.
+- `PandasJSON.write(file, table)`: Write a table to the file in JSON format.
+- `PandasJSON.guess_orient(file)`: Guess the `orient` parameter used to write the given file.
 
 ## Supported formats
 
