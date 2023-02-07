@@ -68,7 +68,7 @@ julia> df = PandasJSON.read("example.json", DataFrame)
 
 **Note:** These functions have an optional `orient` keyword argument, which controls
 how the tabular data is represented as a JSON structure. The default in both Pandas and
-PandasJSON is `orient=:split`, so with default parameters everything should be compatible.
+PandasJSON is `orient="split"`, so with default parameters everything should be compatible.
 
 You should use this argument if either:
 - You are reading data which set the `orient` to something non-default.
