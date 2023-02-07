@@ -1,5 +1,9 @@
 # PandasJSON.jl
 
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Tests](https://github.com/cjdoris/PandasJSON.jl/actions/workflows/tests.yml/badge.svg)](https://github.com/cjdoris/PandasJSON.jl/actions/workflows/tests.yml)
+[![Codecov](https://codecov.io/gh/cjdoris/PandasJSON.jl/branch/main/graph/badge.svg?token=A813UUIHGS)](https://codecov.io/gh/cjdoris/PandasJSON.jl)
+
 A
 [Julia](https://julialang.org/)
 package for reading and writing
