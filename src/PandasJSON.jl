@@ -1,7 +1,5 @@
 module PandasJSON
 
-import AbstractTrees
-import Gumbo
 import JSON3
 import Tables
 import SnoopPrecompile: @precompile_all_calls
