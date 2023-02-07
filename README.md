@@ -12,10 +12,8 @@ dataframes in JSON format.
 
 ## Install
 
-This package is not yet registered, but can be installed like so:
-
 ```
-pkg> add https://github.com/cjdoris/PandasJSON.jl
+pkg> add PandasJSON
 ```
 
 ## Tutorial
