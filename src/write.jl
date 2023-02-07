@@ -1,17 +1,22 @@
 """
-    write(filename_or_io, table; orient="columns", index=nothing)
+    write(filename_or_io, table; orient="columns", index=true)
 
 Write the given table to the given file in JSON format.
 
 ## Keyword Args
 
-- `orient`: the format of the data in the JSON file, one of `"columns"`, `"index"`,
+- `orient`: The format of the data in the JSON file, one of `"columns"`, `"index"`,
   `"records"`, `"split"`, `"table"` or `"values"`. The default `"columns"` matches the
   default used by Pandas.
   
-- `index`: an optional vector of index values to use, instead of the default 0, 1, 2...
+- `index`: Whether or not to include the index. Not including the index (`index=false`) is
+  only supported for `orient="split"` and `orient="table"`. By default the index is
+  `[0,1,2,...]` but you may pass a vector of index values instead.
 """
-function write(io::IO, table; orient::AbstractString="columns", index::Union{Nothing,AbstractVector}=nothing)
+function write(io::IO, table; orient::AbstractString="columns", index::Union{Bool,AbstractVector}=true)
+    if index isa Bool && !index && orient != "split" && orient != "table"
+        error("index=false only supported for orient=\"split\" or orient=\"table\"")
+    end
     if orient == "columns"
         _to_json_columns(io, table; index)
     elseif orient == "index"
@@ -42,7 +47,7 @@ function _to_json_columns(io, table; cols=Tables.columns(table), index)
     data = Dict{Symbol,Dict{String,Any}}()
     for colname in Tables.columnnames(cols)
         data[colname] = Dict{String,Any}(
-            string(index === nothing ? i-1 : index[begin+i-1]) => _to_json_item(x)
+            string(index isa Bool ? i-1 : index[begin+i-1]) => _to_json_item(x)
             for (i, x) in enumerate(Tables.getcolumn(cols, colname))
         )
     end
@@ -56,7 +61,7 @@ function _to_json_index(io, table; rows=Tables.rows(table), sch=Tables.schema(ro
         Tables.eachcolumn(sch, row) do x, _, colname
             newrow[colname] = _to_json_item(x)
         end
-        data[string(index === nothing ? i-1 : index[begin+i-1])] = newrow
+        data[string(index isa Bool ? i-1 : index[begin+i-1])] = newrow
     end
     JSON3.write(io, data)
 end
@@ -83,13 +88,19 @@ function _to_json_split(io, table; rows=Tables.rows(table), sch=Tables.schema(ro
         end
         push!(data, newrow)
     end
-    if index === nothing
+    if index isa Bool
+        include_index = index
         index = Int[i-1 for i in 1:length(data)]
     else
+        include_index = true
         length(index) == length(data) || error("index must be the same length as the table")
         index = [_to_json_item(x) for x in index]
     end
-    JSON3.write(io, (; index, columns, data))
+    if include_index
+        JSON3.write(io, (; index, columns, data))
+    else
+        JSON3.write(io, (; columns, data))
+    end
 end
 
 _to_json_field_type(::Type{<:Union{Missing,Bool}}) = "boolean"
@@ -99,6 +110,7 @@ _to_json_field_type(::Type{<:Union{Missing,AbstractString}}) = "string"
 _to_json_field_type(::Type{T}) where {T} = "string"
 
 function _to_json_table(io, table; rows=Tables.rows(table), sch=Tables.schema(rows), index)
+    include_index = !isa(index, Bool) || index
     idxname = :index
     while idxname in sch.names
         idxname = Symbol("_", idxname)
@@ -111,20 +123,26 @@ function _to_json_table(io, table; rows=Tables.rows(table), sch=Tables.schema(ro
         )
         for (colname, coltype) in zip(sch.names, sch.types)
     ]
-    pushfirst!(fields, (name = idxname, type = index === nothing ? "integer" : _to_json_field_type(eltype(index))))
+    if include_index
+        pushfirst!(fields, (name = idxname, type = index isa Bool ? "integer" : _to_json_field_type(eltype(index))))
+    end
     for (i, row) in enumerate(rows)
         newrow = Dict{Symbol,Any}()
         Tables.eachcolumn(sch, row) do x, _, colname
             newrow[colname] = _to_json_item(x)
         end
-        newrow[idxname] = index === nothing ? i-1 : index[begin+i-1]
+        if include_index
+            newrow[idxname] = index isa Bool ? i-1 : index[begin+i-1]
+        end
         push!(data, newrow)
     end
-    schema = (;
-        fields,
-        primaryKey = [idxname],
-    )
-    JSON3.write(io, (; schema, data))
+    if include_index
+        schema = (; fields, primaryKey = [idxname])
+        JSON3.write(io, (; schema, data))
+    else
+        schema = (; fields)
+        JSON3.write(io, (; schema, data))
+    end
 end
 
 function _to_json_values(io, table; rows=Tables.rows(table), sch=Tables.schema(rows))
