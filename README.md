@@ -80,7 +80,7 @@ julia> PandasJSON.write("example.json", df, orient=:table)
 
 julia> PandasJSON.guess_orient("example.json")
 1-element Vector{Symbol}:
- :table
+ "table"
 
 julia> df = PandasJSON.read("example.json", DataFrame, orient=:table)
 3×2 DataFrame

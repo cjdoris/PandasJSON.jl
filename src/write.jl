@@ -1,26 +1,26 @@
 """
-    write(filename_or_io, table; orient=:columns)
+    write(filename_or_io, table; orient="columns")
 
 Write the given table to the given file in JSON format.
 
 ## Keyword Args
 
-- `orient`: the format of the data in the JSON file, one of `:columns`, `:index`,
-  `:records`, `:split`, `:table` or `:values`. The default `:columns` matches the default
-  used by Pandas.
+- `orient`: the format of the data in the JSON file, one of `"columns"`, `"index"`,
+  `"records"`, `"split"`, `"table"` or `"values"`. The default `"columns"` matches the
+  default used by Pandas.
 """
-function write(io::IO, table; orient::Symbol=:columns)
-    if orient === :columns
+function write(io::IO, table; orient::AbstractString="columns")
+    if orient == "columns"
         _to_json_columns(io, table)
-    elseif orient === :index
+    elseif orient == "index"
         _to_json_index(io, table)
-    elseif orient === :records
+    elseif orient == "records"
         _to_json_records(io, table)
-    elseif orient === :split
+    elseif orient == "split"
         _to_json_split(io, table)
-    elseif orient === :table
+    elseif orient == "table"
         _to_json_table(io, table)
-    elseif orient === :values
+    elseif orient == "values"
         _to_json_values(io, table)
     else
         error("invalid orient=$(repr(orient))")
