@@ -50,7 +50,7 @@ end
 function _read_json_records!(io, data, index)
     o = JSON3.read(io, Vector{Dict{Symbol,Any}})
     index !== nothing && push!(data, index => 1:length(o))
-    cols = _sort_cols!(unique!([k for row in o for k in keys(row)]))
+    cols = _sort_columns!(unique!([k for row in o for k in keys(row)]))
     for k in cols
         push!(data, k => [_read_json_item(get(row, k, nothing)) for row in o])
     end
@@ -126,7 +126,7 @@ function read(io::IO; orient::AbstractString="columns", index::Union{Nothing,Sym
     data = Vector{Pair{Symbol,Vector}}()
     if orient == "columns"
         _read_json_columns!(io, data, index)
-    elseif orient == "columns"
+    elseif orient == "index"
         _read_json_index!(io, data, index)
     elseif orient == "records"
         _read_json_records!(io, data, index)
