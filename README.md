@@ -99,11 +99,13 @@ Read the docstrings for more details and keyword arguments.
 - `PandasJSON.write(file, table)`: Write a table to the file in JSON format.
 - `PandasJSON.guess_orient(file)`: Guess the `orient` parameter used to write the given file.
 
-Note that `PandasJSON.read` should behave identically to `pandas.read_json` and
-`PandasJSON.write` should behave identically to `pandas.DataFrame.to_json`, including the
-behaviour of any supported keyword arguments. Any deviation is considered a bug. Currently
-boolean, numeric and string data is well-supported but date/time data is not (and therefore
-buggy).
+Note that `PandasJSON.read` should behave identically to
+[`pandas.read_json`](https://pandas.pydata.org/docs/reference/api/pandas.read_json.html)
+and `PandasJSON.write` should behave identically to
+[`pandas.DataFrame.to_json`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_json.html),
+including the behaviour of any supported keyword arguments. Any deviation is considered a
+bug. Currently boolean, numeric and string data is well-supported but date/time data is not
+(and therefore buggy).
 
 ## Related packages
 
