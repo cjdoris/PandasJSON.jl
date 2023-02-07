@@ -1,7 +1,11 @@
 """
-    write(filename_or_io, table; orient="columns", index=true)
+    write(file, table; orient="columns", index=true)
 
 Write the given table to the given file in JSON format.
+
+## Args
+- `file`: Either a file name or an open IO stream.
+- `table`: A Tables.jl-compatible table.
 
 ## Keyword Args
 

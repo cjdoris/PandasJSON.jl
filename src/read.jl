@@ -102,7 +102,7 @@ end
 """
     read(file, [type]; orient="columns", index=false)
 
-Read a Pandas dataframe in JSON format from the given file or IO stream.
+Read a Pandas dataframe in JSON format from the given file.
 
 ## Args
 - `file`: Either a file name or an open IO stream.

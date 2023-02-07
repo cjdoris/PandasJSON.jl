@@ -1,5 +1,5 @@
 """
-    guess_orient(filename_or_io)
+    guess_orient(file)
 
 Guess possible values for the `orient` parameter used when the given file was created.
 
