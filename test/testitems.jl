@@ -19,6 +19,8 @@ end
         @test ans isa DataFrame
         tgt = get(examples, id, nothing)
         @assert tgt !== nothing
+        # example 02 uses a non-standard index
+        index = id == "02" ? ["a", "b", "c"] : true
         if tgt !== nothing
             # check the size
             @test size(ans) == size(tgt)
@@ -42,7 +44,7 @@ end
             end
             trows = [Any[tgt[i,nm] for nm in tnames] for i in axes(tgt,1)]
             arows = [Any[ans[i,nm] for nm in anames] for i in axes(ans,1)]
-            if orient in ["values", "split", "table", "records"]
+            if orient in ["values", "split", "table", "records"] || index === true
                 # these preserve row order
                 @test isequal(trows, arows)
             else
@@ -65,7 +67,7 @@ end
         df = get(examples, id, nothing)
         @assert df !== nothing
         # example 02 uses a non-standard index
-        index = id == "02" ? ["a", "b", "c"] : nothing
+        index = id == "02" ? ["a", "b", "c"] : true
         if df !== nothing
             # write the table to a buffer
             io = IOBuffer()
