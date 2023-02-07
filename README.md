@@ -17,7 +17,7 @@ pkg> add https://github.com/cjdoris/PandasJSON.jl
 ## Tutorial
 
 First we load relevant packages. In this tutorial we use
-[DataFrames](https://dataframes.juliadata.org/stable/)
+[DataFrames.jl](https://dataframes.juliadata.org/stable/)
 for our tabular data, but any
 [Tables.jl](https://tables.juliadata.org/stable/)-compatible
 data structure will do.
