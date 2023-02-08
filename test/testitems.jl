@@ -89,7 +89,7 @@ end
             elseif orient == "table"
                 T = @NamedTuple{
                     schema::@NamedTuple{
-                        fields::Vector{@NamedTuple{name::String,type::String}},
+                        fields::Vector{@NamedTuple{name::String,type::String,extDtype::Union{String,Nothing}}},
                         primaryKey::Vector{String},
                     },
                     data::Vector{Dict{String,Any}},

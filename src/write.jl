@@ -107,11 +107,28 @@ function _to_json_split(io, table; rows=Tables.rows(table), sch=Tables.schema(ro
     end
 end
 
-_to_json_field_type(::Type{<:Union{Missing,Bool}}) = "boolean"
-_to_json_field_type(::Type{<:Union{Missing,Integer}}) = "integer"
-_to_json_field_type(::Type{<:Union{Missing,Real}}) = "number"
-_to_json_field_type(::Type{<:Union{Missing,AbstractString}}) = "string"
-_to_json_field_type(::Type{T}) where {T} = "string"
+function _table_schema_field(name, T)
+    n = Symbol(name)
+    e = nothing
+    if T <: Missing
+        t = "string"
+    elseif T <: Union{Bool,Missing}
+        t = "boolean"
+        if Missing <: T
+            e = "boolean"
+        end
+    elseif T <: Union{Missing,Integer}
+        t = "integer"
+        if Missing <: T
+            e = "Int64"
+        end
+    elseif T <: Union{Missing,Real}
+        t = "number"
+    else
+        t = "string"
+    end
+    return NamedTuple{(:name,:type,:extDtype),Tuple{Symbol,String,Union{String,Nothing}}}((n,t,e))
+end
 
 function _to_json_table(io, table; rows=Tables.rows(table), sch=Tables.schema(rows), index)
     include_index = !isa(index, Bool) || index
@@ -121,14 +138,11 @@ function _to_json_table(io, table; rows=Tables.rows(table), sch=Tables.schema(ro
     end
     data = Dict{Symbol,Any}[]
     fields = [
-        (
-            name = colname,
-            type = _to_json_field_type(coltype),
-        )
+        _table_schema_field(colname, coltype)
         for (colname, coltype) in zip(sch.names, sch.types)
     ]
     if include_index
-        pushfirst!(fields, (name = idxname, type = index isa Bool ? "integer" : _to_json_field_type(eltype(index))))
+        pushfirst!(fields, _table_schema_field(idxname, index isa Bool ? Int : eltype(index)))
     end
     for (i, row) in enumerate(rows)
         newrow = Dict{Symbol,Any}()
