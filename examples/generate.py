@@ -63,6 +63,16 @@ save_json(
     'frame-04',
 )
 
+# datetime
+save_json(
+    pd.DataFrame(
+        {
+            'datetime': [pd.Timestamp('20010203'), pd.NA, pd.Timestamp('20040506'), pd.Timestamp('20070809')],
+        }
+    ),
+    'frame-05',
+)
+
 # series
 save_json(
     pd.Series([1,2,3,4,5]),
