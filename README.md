@@ -104,8 +104,7 @@ Note that `PandasJSON.read` should behave identically to
 and `PandasJSON.write` should behave identically to
 [`pandas.DataFrame.to_json`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_json.html),
 including the behaviour of any supported keyword arguments. Any deviation is considered a
-bug. Currently boolean, numeric and string data is well-supported but date/time data is not
-(and therefore buggy).
+bug.
 
 ## Related packages
 
