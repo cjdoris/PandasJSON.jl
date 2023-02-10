@@ -1,4 +1,4 @@
-using DataFrames, JSON3
+using DataFrames, Dates, JSON3
 
 examples = Dict(
     "01" => DataFrame(
@@ -20,5 +20,8 @@ examples = Dict(
         set = [[1,2],[3,4],[5,6]],
         tuple = [[1,2],[3,4],[5,6]],
         list2 = [[1,2],missing,[5,6]],
+    ),
+    "05" => DataFrame(
+        datetime = [DateTime(2001,2,3), missing, DateTime(2004,5,6), DateTime(2007,8,9)],
     ),
 )

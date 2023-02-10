@@ -1,5 +1,6 @@
 module PandasJSON
 
+import Dates
 import JSON3
 import Tables
 import SnoopPrecompile: @precompile_all_calls
@@ -10,7 +11,7 @@ include("guess_orient.jl")
 
 const _json_examples = [
     (joinpath(dirname(@__DIR__), "examples", "frame-$id-$orient.json"), (; orient))
-    for id in ["01", "02", "03", "04"]
+    for id in ["01", "02", "03", "04", "05"]
     for orient in ["columns", "index", "records", "split", "table", "values"]
 ]
 

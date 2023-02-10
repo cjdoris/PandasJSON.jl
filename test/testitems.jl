@@ -15,7 +15,9 @@ end
         id = m.captures[1]
         orient = m.captures[2]
         @assert orient == kw.orient
-        ans = PandasJSON.read(fn, DataFrame; kw...)
+        # example 05 has datetimes
+        convert_dates = (id == "05" && orient == "values") ? [:Column1] : true
+        ans = PandasJSON.read(fn, DataFrame; convert_dates, kw...)
         @test ans isa DataFrame
         tgt = get(examples, id, nothing)
         @assert tgt !== nothing
@@ -61,13 +63,15 @@ end
         m = match(r"frame-([0-9]+)-([a-z]+).json$", fn)
         @assert m isa RegexMatch
         id = m.captures[1]
-        @assert id in ["01", "02", "03", "04"]
+        @assert id in ["01", "02", "03", "04", "05"]
         orient = m.captures[2]
         @assert orient == kw.orient
         df = get(examples, id, nothing)
         @assert df !== nothing
         # example 02 uses a non-standard index
         index = id == "02" ? ["a", "b", "c"] : true
+        # example 05 has DateTime, which are not supported
+        id == "05" && continue
         if df !== nothing
             # write the table to a buffer
             io = IOBuffer()
