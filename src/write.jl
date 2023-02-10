@@ -1,5 +1,10 @@
 """
-    write(file, table; orient="columns", index=true)
+    write(file, table;
+        orient="columns",
+        index=true,
+        date_format=nothing,
+        date_unit="ms",
+    )
 
 Write the given table to the given file in JSON format.
 
@@ -16,23 +21,38 @@ Write the given table to the given file in JSON format.
 - `index`: Whether or not to include the index. Not including the index (`index=false`) is
   only supported for `orient="split"` and `orient="table"`. By default the index is
   `[0,1,2,...]` but you may pass a vector of index values instead.
+
+- `date_format`: One of `"epoch"` or `"iso"`. The default for `orient="table"` is `"iso"`,
+  otherwise it is `"epoch"`.
+
+- `date_unit`: The precision of any encoded timestamps. One of `"s"`, `"ms"`, `"us"` or
+  `"ns"`.
 """
-function write(io::IO, table; orient::AbstractString="columns", index::Union{Bool,AbstractVector}=true)
+function write(io::IO, table;
+    orient::AbstractString="columns",
+    index::Union{Bool,AbstractVector}=true,
+    date_format::Union{Nothing,AbstractString}=nothing,
+    date_unit::AbstractString="ms",
+)
     if index isa Bool && !index && orient != "split" && orient != "table"
         error("index=false only supported for orient=\"split\" or orient=\"table\"")
     end
+    if date_format === nothing
+        date_format = orient == "table" ? "iso" : "epoch"
+    end
+    fmt = Format(date_format, date_unit)
     if orient == "columns"
-        _write_columns(io, table; index)
+        _write_columns(io, table; fmt, index)
     elseif orient == "index"
-        _write_index(io, table; index)
+        _write_index(io, table; fmt, index)
     elseif orient == "records"
-        _write_records(io, table)
+        _write_records(io, table; fmt)
     elseif orient == "split"
-        _write_split(io, table; index)
+        _write_split(io, table; fmt, index)
     elseif orient == "table"
-        _write_table(io, table; index)
+        _write_table(io, table; fmt, index)
     elseif orient == "values"
-        _write_values(io, table)
+        _write_values(io, table; fmt)
     else
         error("invalid orient=$(repr(orient))")
     end
@@ -41,54 +61,72 @@ end
 
 write(filename::AbstractString, table; kw...) = open(io->write(io, table; kw...), filename, "w")
 
-_to_json(x::Union{Nothing,Bool,Real,AbstractString}) = x
-_to_json(x::Missing) = nothing
-_to_json(x::Real) = isfinite(x) ? x : nothing
-_to_json(x::Union{AbstractVector,AbstractSet,Tuple}) = [_to_json(x) for x in x]
-_to_json(x::AbstractDict) = Dict(string(k) => _to_json(v) for (k, v) in x)
+struct Format{DF,DU}
+    function Format(df, du)
+        df = Symbol(df)
+        du = Symbol(du)
+        df in (:epoch, :iso) || error("invalid date_format: $df")
+        du in (:s, :ms, :us, :ns) || error("invalid date_unit: $du")
+        return new{df,du}()
+    end
+end
 
-function _write_columns(io, table; cols=Tables.columns(table), index)
+_to_json(x::Union{Nothing,Bool,Real,AbstractString}, fmt) = x
+_to_json(x::Missing, fmt) = nothing
+_to_json(x::Real, fmt) = isfinite(x) ? x : nothing
+_to_json(x::Union{AbstractVector,AbstractSet,Tuple}, fmt) = [_to_json(x, fmt) for x in x]
+_to_json(x::AbstractDict, fmt) = Dict(string(k) => _to_json(v, fmt) for (k, v) in x)
+_to_json(x::Dates.DateTime, ::Format{:epoch,:s}) = ((x - Dates.DateTime(1970))::Dates.Millisecond).value ÷ 1000
+_to_json(x::Dates.DateTime, ::Format{:epoch,:ms}) = ((x - Dates.DateTime(1970))::Dates.Millisecond).value
+_to_json(x::Dates.DateTime, ::Format{:epoch,:us}) = ((x - Dates.DateTime(1970))::Dates.Millisecond).value * 1000
+_to_json(x::Dates.DateTime, ::Format{:epoch,:ns}) = ((x - Dates.DateTime(1970))::Dates.Millisecond).value * 1000000
+_to_json(x::Dates.DateTime, ::Format{:iso,:s}) = Dates.format(x, Dates.dateformat"yyyy-mm-ddTHH:MM:SS")
+_to_json(x::Dates.DateTime, ::Format{:iso,:ms}) = Dates.format(x, Dates.dateformat"yyyy-mm-ddTHH:MM:SS.sss")
+_to_json(x::Dates.DateTime, ::Format{:iso,:us}) = Dates.format(x, Dates.dateformat"yyyy-mm-ddTHH:MM:SS.sss000")
+_to_json(x::Dates.DateTime, ::Format{:iso,:ns}) = Dates.format(x, Dates.dateformat"yyyy-mm-ddTHH:MM:SS.sss000000")
+
+function _write_columns(io, table; cols=Tables.columns(table), index, fmt)
     data = Dict{Symbol,Dict{String,Any}}()
     for colname in Tables.columnnames(cols)
         data[colname] = Dict{String,Any}(
-            string(index isa Bool ? i-1 : index[begin+i-1]) => _to_json(x)
+            string(index isa Bool ? i-1 : index[begin+i-1]) => _to_json(x, fmt)
             for (i, x) in enumerate(Tables.getcolumn(cols, colname))
         )
     end
     JSON3.write(io, data)
 end
 
-function _write_index(io, table; rows=Tables.rows(table), sch=Tables.schema(rows), index)
+function _write_index(io, table; rows=Tables.rows(table), sch=Tables.schema(rows), index, fmt)
     data = Dict{String,Dict{Symbol,Any}}()
     for (i, row) in enumerate(rows)
         newrow = Dict{Symbol,Any}()
         Tables.eachcolumn(sch, row) do x, _, colname
-            newrow[colname] = _to_json(x)
+            newrow[colname] = _to_json(x, fmt)
         end
         data[string(index isa Bool ? i-1 : index[begin+i-1])] = newrow
     end
     JSON3.write(io, data)
 end
 
-function _write_records(io, table; rows=Tables.rows(table), sch=Tables.schema(rows))
+function _write_records(io, table; rows=Tables.rows(table), sch=Tables.schema(rows), fmt)
     data = Vector{Dict{Symbol,Any}}()
     for row in rows
         newrow = Dict{Symbol,Any}()
         Tables.eachcolumn(sch, row) do x, _, colname
-            newrow[colname] = _to_json(x)
+            newrow[colname] = _to_json(x, fmt)
         end
         push!(data, newrow)
     end
     JSON3.write(io, data)
 end
 
-function _write_split(io, table; rows=Tables.rows(table), sch=Tables.schema(rows), index)
+function _write_split(io, table; rows=Tables.rows(table), sch=Tables.schema(rows), index, fmt)
     data = Vector{Any}[]
     columns = collect(Tables.columnnames(rows))
     for row in rows
         newrow = []
         Tables.eachcolumn(sch, row) do x, _, _
-            push!(newrow, _to_json(x))
+            push!(newrow, _to_json(x, fmt))
         end
         push!(data, newrow)
     end
@@ -98,7 +136,7 @@ function _write_split(io, table; rows=Tables.rows(table), sch=Tables.schema(rows
     else
         include_index = true
         length(index) == length(data) || error("index must be the same length as the table")
-        index = [_to_json(x) for x in index]
+        index = [_to_json(x, fmt) for x in index]
     end
     if include_index
         JSON3.write(io, (; index, columns, data))
@@ -130,7 +168,7 @@ function _table_schema_field(name, T)
     return NamedTuple{(:name,:type,:extDtype),Tuple{Symbol,String,Union{String,Nothing}}}((n,t,e))
 end
 
-function _write_table(io, table; rows=Tables.rows(table), sch=Tables.schema(rows), index)
+function _write_table(io, table; rows=Tables.rows(table), sch=Tables.schema(rows), index, fmt)
     include_index = !isa(index, Bool) || index
     idxname = :index
     while idxname in sch.names
@@ -147,10 +185,10 @@ function _write_table(io, table; rows=Tables.rows(table), sch=Tables.schema(rows
     for (i, row) in enumerate(rows)
         newrow = Dict{Symbol,Any}()
         Tables.eachcolumn(sch, row) do x, _, colname
-            newrow[colname] = _to_json(x)
+            newrow[colname] = _to_json(x, fmt)
         end
         if include_index
-            newrow[idxname] = index isa Bool ? i-1 : index[begin+i-1]
+            newrow[idxname] = _to_json(index isa Bool ? i-1 : index[begin+i-1], fmt)
         end
         push!(data, newrow)
     end
@@ -163,12 +201,12 @@ function _write_table(io, table; rows=Tables.rows(table), sch=Tables.schema(rows
     end
 end
 
-function _write_values(io, table; rows=Tables.rows(table), sch=Tables.schema(rows))
+function _write_values(io, table; rows=Tables.rows(table), sch=Tables.schema(rows), fmt)
     data = Vector{Vector{Any}}()
     for row in rows
         newrow = []
         Tables.eachcolumn(sch, row) do x, _, _
-            push!(newrow, _to_json(x))
+            push!(newrow, _to_json(x, fmt))
         end
         push!(data, newrow)
     end

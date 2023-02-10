@@ -70,8 +70,6 @@ end
         @assert df !== nothing
         # example 02 uses a non-standard index
         index = id == "02" ? ["a", "b", "c"] : true
-        # example 05 has DateTime, which are not supported
-        id == "05" && continue
         if df !== nothing
             # write the table to a buffer
             io = IOBuffer()
