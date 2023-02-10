@@ -234,8 +234,22 @@ function _try_convert_col_to_datetime(col, unit)
             ans === nothing || return ans
         end
     elseif all(x->isa(x,Union{Missing,AbstractString}), col)
-        ans = _col_map(x -> tryparse(Dates.DateTime, x), col)
-        ans === nothing || return ans
+        if unit === nothing || unit == "ns"
+            ans = _col_map(x -> tryparse(Dates.DateTime, x, Dates.dateformat"yyyy-mm-ddTHH:MM:SS.sss000000"), col)
+            ans === nothing || return ans    
+        end
+        if unit === nothing || unit == "us"
+            ans = _col_map(x -> tryparse(Dates.DateTime, x, Dates.dateformat"yyyy-mm-ddTHH:MM:SS.sss000"), col)
+            ans === nothing || return ans    
+        end
+        if unit === nothing || unit == "ms"
+            ans = _col_map(x -> tryparse(Dates.DateTime, x, Dates.dateformat"yyyy-mm-ddTHH:MM:SS.sss"), col)
+            ans === nothing || return ans    
+        end
+        if unit === nothing || unit == "s"
+            ans = _col_map(x -> tryparse(Dates.DateTime, x, Dates.dateformat"yyyy-mm-ddTHH:MM:SS"), col)
+            ans === nothing || return ans    
+        end
     end
     return nothing
 end
