@@ -3,7 +3,7 @@ module PandasJSON
 import Dates
 import JSON3
 import Tables
-import SnoopPrecompile: @precompile_all_calls
+import PrecompileTools: @compile_workload
 
 include("read.jl")
 include("write.jl")
@@ -15,7 +15,7 @@ const _json_examples = [
     for orient in ["columns", "index", "records", "split", "table", "values"]
 ]
 
-@precompile_all_calls begin
+@compile_workload begin
     for (fn, kw) in _json_examples
         read(fn; kw...)
     end
