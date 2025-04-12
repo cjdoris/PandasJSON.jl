@@ -2,9 +2,9 @@ module DataFramesExt
 
 import DataFrames: DataFrame
 import PandasJSON: read, _json_examples
-import SnoopPrecompile: @precompile_all_calls
+import PrecompileTools: @compile_workload
 
-@precompile_all_calls begin
+@compile_workload begin
     for (fn, kw) in _json_examples
         read(fn, DataFrame; kw...)
     end
